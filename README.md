@@ -30,22 +30,19 @@ User → Open WebUI → Pipeline (4-step RAG) → LLM (gpt-4o-mini)
 3. **Vector Retrieval** — поиск релевантных статей в Qdrant (top-7)
 4. **Generation** — LLM формирует ответ со ссылками на статьи
 
-## Быстрый старт
+## Быстрый старт (для нового разработчика)
+
+Данные уже загружены в Qdrant Cloud — скачивать и парсить кодексы не нужно.
 
 ```bash
-# 1. Настроить переменные
+git clone https://github.com/kobzevvv/legal-ai-platform.git
+cd legal-ai-platform
+
+# 1. Получить .env с ключами от владельца проекта
 cp .env.example .env
-# Заполнить: OPENAI_API_KEY, QDRANT_URL, QDRANT_API_KEY
+# Заполнить 3 ключа: OPENAI_API_KEY, QDRANT_URL, QDRANT_API_KEY
 
-# 2. Загрузить и распарсить кодексы (если нужна своя база)
-cd ingestion
-pip install -r requirements.txt
-python download_codexes.py
-python parse_codexes.py
-python embed_and_upload.py
-cd ..
-
-# 3. Запустить
+# 2. Запустить
 docker compose up -d
 ```
 
@@ -56,7 +53,19 @@ docker compose up -d
 2. Модель **"Legal AI — Российское законодательство"** уже выбрана по умолчанию
 3. Задавайте вопросы — ответы будут со ссылками на статьи кодексов
 
-> **Важно:** В списке моделей должна быть выбрана именно "Legal AI — Российское законодательство", а не какая-либо другая модель. Только через наш pipeline ответы содержат ссылки на конкретные статьи.
+> **Важно:** В списке моделей должна быть выбрана именно "Legal AI — Российское законодательство". Только через наш pipeline ответы содержат ссылки на конкретные статьи.
+
+### Пересоздание базы знаний (если нужно)
+
+Если нужно обновить кодексы или создать свою базу с нуля:
+
+```bash
+cd ingestion
+pip install -r requirements.txt
+python download_codexes.py    # ~300 MB HTML с consultant.ru
+python parse_codexes.py       # HTML → JSON (4741 статья)
+python embed_and_upload.py    # Embeddings → Qdrant Cloud
+```
 
 ## Тестирование
 
