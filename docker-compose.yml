@@ -1,0 +1,36 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3002:8080"
+    environment:
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-secret}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PIPELINES_URLS=${PIPELINES_URL:-http://pipelines:9099}
+    volumes:
+      - open-webui-data:/app/backend/data
+    depends_on:
+      - pipelines
+    restart: unless-stopped
+
+  pipelines:
+    image: ghcr.io/open-webui/pipelines:main
+    container_name: pipelines
+    ports:
+      - "9099:9099"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - QDRANT_URL=${QDRANT_URL}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
+      - QDRANT_COLLECTION=${QDRANT_COLLECTION:-russian_law}
+      - PIPELINES_REQUIREMENTS_PATH=/app/pipelines/requirements.txt
+    volumes:
+      - ./pipelines:/app/pipelines
+      - pipelines-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  open-webui-data:
+  pipelines-data:

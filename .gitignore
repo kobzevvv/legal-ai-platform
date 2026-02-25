@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Environment
+.env
+
+# Data (raw HTML + parsed JSON are large)
+ingestion/data/
+
+# Pipeline runtime cache
+pipelines/legal_rag/
+
+# Eval results
+eval/results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
